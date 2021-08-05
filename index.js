@@ -1,6 +1,9 @@
-import InputHandler from 'inputhandler.js';
-import Ball from 'ball.js';
-import Paddle from 'paddle.js';
+import Paddle from '/paddle.js';
+import InputHandler from '/inputhandler.js';
+
+import Ball from '/ball.js';
+
+
 let canvas = document.getElementById('gameScreen');
 let ctx = canvas.getContext('2d');
 const GAME_WIDTH = 800;
