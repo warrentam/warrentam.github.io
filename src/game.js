@@ -1,6 +1,6 @@
-import Paddle from '/dong/paddle.js';
-import InputHandler from '/dong/inputhandler.js';
-import Ball from '/dong/ball.js';
+import Paddle from '/src/dong/paddle.js';
+import InputHandler from '/src/dong/inputhandler.js';
+import Ball from '/src/dong/ball.js';
 
 export default class Game {
     constructor(gameWidth, gameHeight) {
