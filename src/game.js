@@ -14,9 +14,11 @@ export default class Game {
         this.gameObjects = [this.ball, this.paddle];
         new InputHandler(this.paddle);
     }
+    
     update(deltaTime) {
         this.gameObjects.forEach(object => object.update(deltaTime));
     }
+
     draw(ctx) {
         this.gameObjects.forEach(object => object.draw(ctx));
     }

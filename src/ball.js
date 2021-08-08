@@ -8,12 +8,17 @@ export default class Ball {
         this.gameHeight = game.gameHeight;
 
     }
+    
+    // Drawing Ball Image
     draw(ctx) {
         ctx.drawImage(this.image, this.position.x, this.position.y, this.size, this.size);
     }
+
+    // Updating Ball Movement
     update(deltaTime) {
         this.position.x += this.speed.x;
         this.position.y += this.speed.y;
+
         if (this.position.x + this.size > this.gameWidth || this.position.x < 0){
             this.speed.x = -this.speed.x
         }
