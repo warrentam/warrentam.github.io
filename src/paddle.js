@@ -29,6 +29,8 @@ export default class Paddle {
             this.position.x = 650;
         }
     }
+
+    // Ball Movement
     moveLeft() {
         this.speed = -this.maxSpeed;
     }
