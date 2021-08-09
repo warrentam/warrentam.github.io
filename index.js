@@ -100,6 +100,7 @@ class InputHandler {
 
 class Ball {
     constructor(game) {
+        this.game = game;
         this.image = document.getElementById('img_ball')
         this.position = {x: 10, y: 10 };
         this.speed = {x: 4, y: 2};
@@ -124,6 +125,12 @@ class Ball {
         }
         if (this.position.y + this.size> this.gameHeight || this.position.y < 0){
             this.speed.y = -this.speed.y
+        }
+        let bottomOfBall = this.position.y + this.size;
+        let topOfPaddle = this.game.paddle.position.y;
+        if(bottomOfBall >= topOfPaddle) {
+            this.speed.y = -this.speed.y;
+            this.position.y = this.game.paddle.position.y - this.size
         }
 
     }
