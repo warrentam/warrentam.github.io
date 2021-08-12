@@ -7,12 +7,14 @@ class Game {
     start() {
         this.ball = new Ball(this);
         this.paddle = new Paddle(this);
-        this.gameObjects = [this.ball, this.paddle];
         new InputHandler(this.paddle);
+        let bricks = buildLevel(this, level1);
+        this.gameObjects = [this.ball, this.paddle, ...bricks];
     }
     
     update(deltaTime) {
         this.gameObjects.forEach(object => object.update(deltaTime));
+        this.gameObjects = this.gameObjects.filter(object => !object.markedForDeletion);
     }
 
     draw(ctx) {
@@ -126,20 +128,83 @@ class Ball {
         if (this.position.y + this.size> this.gameHeight || this.position.y < 0){
             this.speed.y = -this.speed.y
         }
-        let bottomOfBall = this.position.y + this.size;
-        let topOfPaddle = this.game.paddle.position.y;
-        let leftSideOfPaddle = this.game.paddle.position.x;
-        let rightSideOfPaddle = this.game.paddle.position.x + this.game.paddle.width;
-        if (bottomOfBall >= topOfPaddle && 
-            this.position.x >= leftSideOfPaddle && 
-            this.position.x + this.size <= rightSideOfPaddle) {
+        if (detectCollision(this, this.game.paddle)){
             this.speed.y = -this.speed.y;
-            this.position.y = this.game.paddle.position.y - this.size
+            this.position.y = this.game.paddle.position.y - this.size;
         }
 
     }
-}   
+}  
 
+class Brick {
+    constructor(game, position) {
+        this.game = game;
+        this.image = document.getElementById('img_brick')
+        this.position = position;
+        this.width = 80;
+        this.height = 24;
+        this.gameWidth = game.gameWidth;
+        this.gameHeight = game.gameHeight;
+        this.markedForDeletion = false;
+
+    }
+
+    update() {
+        if(detectCollision(this.game.ball, this)){
+            this.game.ball.speed.y = -this.game.ball.speed.y;
+            this.markedForDeletion = true;
+        }
+
+    }
+    
+    draw(ctx) {
+        ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+    }
+}
+
+function buildLevel(game, level) {
+    let bricks = [];
+    level.forEach((row, rowIndex)=> {
+        row.forEach((brick, brickIndex)=>{
+            if(brick === 1) {
+                let position ={
+                    x: 80 * brickIndex,
+                    y: 75 + 24 * rowIndex
+                };
+                bricks.push(new Brick(game, position));
+            }
+        });
+    });
+    return bricks
+}
+
+function detectCollision(ball, gameObject) {
+    let bottomOfBall = ball.position.y + ball.size;
+    let topOfBall = ball.position.y
+    let topOfObject = gameObject.position.y;
+    let leftSideOfObject = gameObject.position.x;
+    let rightSideOfObject = gameObject.position.x + gameObject.width;
+    let bottomOfObject = gameObject.position.y + gameObject.height;
+    if (bottomOfBall >= topOfObject && 
+        topOfBall <= bottomOfObject &&
+        ball.position.x >= leftSideOfObject && 
+        ball.position.x + ball.size <= rightSideOfObject) {
+        return true;
+        }
+    else {
+        return false;
+    }
+        
+    
+
+}
+
+const level1 = [
+    [0,1,1,0,0,0,0,1,1,0],
+    [1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1]
+];
 
 let canvas = document.getElementById('gameScreen');
 let ctx = canvas.getContext('2d');
