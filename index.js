@@ -1,24 +1,94 @@
+const GAMESTATE = {
+    PAUSED: 0,
+    RUNNING: 1,
+    MENU: 2,
+    GAMEOVER: 3,
+    NEWLEVEL: 4,
+}
+
 class Game {
     constructor(gameWidth, gameHeight) {
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
-        
-    }
-    start() {
+        this.gamestate = GAMESTATE.MENU;
         this.ball = new Ball(this);
         this.paddle = new Paddle(this);
-        new InputHandler(this.paddle);
-        let bricks = buildLevel(this, level1);
-        this.gameObjects = [this.ball, this.paddle, ...bricks];
+        this.gameObjects = [];
+        this.bricks = [];
+        new InputHandler(this.paddle, this);
+        this.lives = 3;
+        this.levels = [level1, level2];
+        this.currentLevel = 0;
+    }
+    start() {
+        if (this.gamestate !== GAMESTATE.MENU&&
+            this.gamestate !== GAMESTATE.NEWLEVEL) return; 
+        
+        this.bricks = buildLevel(this, this.levels[this.currentLevel]);
+        this.ball.reset();
+        this.gameObjects = [this.ball, this.paddle];
+        this.gamestate = GAMESTATE.RUNNING;
     }
     
     update(deltaTime) {
-        this.gameObjects.forEach(object => object.update(deltaTime));
-        this.gameObjects = this.gameObjects.filter(object => !object.markedForDeletion);
+        if (this.lives == 0){
+            this.gamestate = GAMESTATE.GAMEOVER;
+        }
+        if (this.gamestate === GAMESTATE.PAUSED || 
+            this.gamestate === GAMESTATE.MENU||
+            this.gamestate === GAMESTATE.GAMEOVER
+            ) return;
+        
+        if (this.bricks.length === 0) {
+            this.currentLevel++;
+            this.gamestate = GAMESTATE.NEWLEVEL;
+            this.start();
+
+        }
+        [...this.gameObjects, ...this.bricks].forEach(object => object.update(deltaTime));
+        this.bricks = this.bricks.filter(brick => !brick.markedForDeletion);
     }
 
     draw(ctx) {
-        this.gameObjects.forEach(object => object.draw(ctx));
+        [...this.gameObjects, ...this.bricks].forEach(object => object.draw(ctx));
+        if(this.gamestate == GAMESTATE.PAUSED){
+            ctx.rect(0,0,this.gameWidth,this.gameHeight);
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fill();
+            ctx.font = '30px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText('Paused', this.gameWidth/2, this.gameHeight/2)
+        }
+    
+    
+        if(this.gamestate == GAMESTATE.MENU){
+            ctx.rect(0,0,this.gameWidth,this.gameHeight);
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fill();
+            ctx.font = '30px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText('Press SPACEBAR To Start', this.gameWidth/2, this.gameHeight/2)
+        }
+
+        if(this.gamestate == GAMESTATE.GAMEOVER){
+            ctx.rect(0,0,this.gameWidth,this.gameHeight);
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.fill();
+            ctx.font = '30px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText('GAME OVER', this.gameWidth/2, this.gameHeight/2)
+        }
+    }
+    togglePause() {
+        if(this.gamestate == GAMESTATE.PAUSED) {
+            this.gamestate = GAMESTATE.RUNNING;
+        } else{
+            this.gamestate = GAMESTATE.PAUSED;
+        }
+        
     }
 }
 
@@ -67,7 +137,7 @@ class Paddle {
 }  
 
 class InputHandler {
-    constructor(paddle) {
+    constructor(paddle, game) {
 
         document.addEventListener('keydown', event => {
             switch(event.keyCode) {
@@ -77,6 +147,14 @@ class InputHandler {
                 
                 case 39: // Right Key
                     paddle.moveRight();
+                    break;
+                
+                case 27:
+                    game.togglePause();
+                    break;
+                
+                case 32:
+                    game.start();
                     break;
             }
         });
@@ -104,12 +182,16 @@ class Ball {
     constructor(game) {
         this.game = game;
         this.image = document.getElementById('img_ball')
-        this.position = {x: 10, y: 10 };
-        this.speed = {x: 4, y: 2};
         this.size = 16;
         this.gameWidth = game.gameWidth;
         this.gameHeight = game.gameHeight;
+        this.reset();
 
+    }
+
+    reset() {
+        this.position = {x: 10, y: 400 };
+        this.speed = {x: 4, y: -2};
     }
     
     // Drawing Ball Image
@@ -125,8 +207,12 @@ class Ball {
         if (this.position.x + this.size > this.gameWidth || this.position.x < 0){
             this.speed.x = -this.speed.x
         }
-        if (this.position.y + this.size> this.gameHeight || this.position.y < 0){
+        if (this.position.y < 0){
             this.speed.y = -this.speed.y
+        }
+        if (this.position.y + this.size > this.gameHeight) {
+            this.game.lives--;
+            this.reset();
         }
         if (detectCollision(this, this.game.paddle)){
             this.speed.y = -this.speed.y;
@@ -201,6 +287,13 @@ function detectCollision(ball, gameObject) {
 
 const level1 = [
     [0,1,1,0,0,0,0,1,1,0],
+    //[1,1,1,1,1,1,1,1,1,1],
+    //[1,1,1,1,1,1,1,1,1,1],
+    //[1,1,1,1,1,1,1,1,1,1]
+];
+
+const level2 = [
+    [0,1,1,0,0,0,0,1,1,0],
     [1,1,1,1,1,1,1,1,1,1],
     [1,1,1,1,1,1,1,1,1,1],
     [1,1,1,1,1,1,1,1,1,1]
@@ -211,7 +304,6 @@ let ctx = canvas.getContext('2d');
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
 let game = new Game(GAME_WIDTH, GAME_HEIGHT);
-game.start();
 let lastTime;
 
 
