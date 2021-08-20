@@ -1,27 +1,19 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-	<title>Paddle Game</title>
-	<meta charset="UTF-8" />
-	<style>
-		#gameScreen {
-			border: 1px solid black;
-
-		}
-		img {
-			display: none;
-		}
-	</style>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space shooter</title>
+    <style>
+        #gameScreen {
+            border: 2px solid black
+        }
+    </style>
 </head>
-
 <body>
-	<img id='img_ball' src='ball.png'>
-	<img id='img_brick' src='brick.png'>
-	<canvas id='gameScreen' width="800" height="600"></canvas>
-
-	<script src="index.js" type='module'>
-	</script>
+    <img id='ship' src='ship.png' width = 0 height = 0>
+    <canvas id='gameScreen' width=1000 height=600></canvas>
+    <script src = 'index.js'></script>
 </body>
-
 </html>
