@@ -1,65 +1,56 @@
-canvas = document.getElementById('gameScreen')
-ctx = canvas.getContext('2d')
-ship = document.getElementById('ship')
-let x = 450
-let y = 500
-let maxSpeed = 5
-let xSpeed = 0
-let ySpeed = 0
-function listener() {
-    document.addEventListener('keydown', event => {
-        switch(event.keyCode) {
-            case 37:
-                xSpeed = -maxSpeed
-                break
-            case 39:
-                xSpeed = maxSpeed
-                break
-            case 38:
-                ySpeed = -maxSpeed
-                break
-            case 40:
-                ySpeed = maxSpeed
+let canvas = document.getElementById('gameScreen')
+let ctx = canvas.getContext('2d')
+let asteroidArray = []
+class Asteroid {
+    constructor() {
+        this.sprite1 = document.getElementById('asteroid1')
+        this.sprite2 = document.getElementById('asteroid2')
+        this.sprite3 = document.getElementById('asteroid3')
+        this.width = 50
+        this.height = 50
+        this.x = xRandomPosition()
+        this.y = 0
+        this.sprite = 1
+        this.spriteNumber = Math.floor(Math.random() * 3 + 1)
+        if (this.spriteNumber == 1) {
+            this.sprite = this.sprite1
         }
-    })
-
-    document.addEventListener('keyup', event => {
-        switch(event.keyCode) {
-            case 37:
-                if (xSpeed<0) {
-                    xSpeed = 0
-                }
-                break
-            case 39:
-                if (xSpeed > 0) {
-                    xSpeed = 0
-                }
-                break
-            case 38:
-                if(ySpeed < 0) {
-                    ySpeed = 0
-                }
-                break
-            case 40:
-                if (ySpeed > 0) {
-                    ySpeed = 0
-                }
-                break
+        if (this.spriteNumber == 2) {
+            this.sprite = this.sprite2
         }
-    })
+        if (this.spriteNumber == 3) {
+            this.sprite = this.sprite3
+        }
+    }
+    
+    draw() {
+        ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height)
+        this.y += 5
+        if (this.y > 600) {
+            asteroidArray.shift()
+        }
+    }
+}
+function xRandomPosition() {
+    return Math.floor(Math.random() * 900)
+}
+function asteroidGenerationTiming() {
+    return Math.floor(Math.random() * 50)
+}
+function asteroidPushToArray() {
+    if (asteroidGenerationTiming() == 25) {
+        if (asteroidArray.length < 10) {
+            asteroidArray.push(new Asteroid)
+        }
+    }
 }
 function gameLoop() {
     ctx.clearRect(0, 0, 1000, 600)
-    ctx.drawImage(ship, x, y, 100, 100)
-    x += xSpeed
-    y += ySpeed
-    if (x >= 900) {
-        x = 900
-    }
-    if (x <= 0) {
-        x = 0
-    }
-    listener()
+    asteroidGenerationTiming()
+    asteroidPushToArray()
+    asteroidArray.forEach(asteroid => {
+        asteroid.draw()
+    })
     requestAnimationFrame(gameLoop)
 }
 gameLoop()
