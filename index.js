@@ -43,6 +43,9 @@ function asteroidPushToArray() {
             asteroidArray.push(new Asteroid)
         }
     }
+    if (asteroidArray.length == 0) {
+        asteroidArray.push(new Asteroid)
+    }
 }
 function gameLoop() {
     ctx.clearRect(0, 0, 1000, 600)
