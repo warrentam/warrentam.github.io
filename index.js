@@ -9,7 +9,7 @@ class Asteroid {
         this.sprite3 = document.getElementById('asteroid3')
         this.width = 50
         this.height = 50
-        this.x = xRandomPosition()
+        this.x = asteroidRandomizer.xRandomPosition()
         this.y = 0
         this.sprite = 1
         this.spriteNumber = Math.floor(Math.random() * 3 + 1)
@@ -32,21 +32,26 @@ class Asteroid {
         }
     }
 }
-function xRandomPosition() {
-    return Math.floor(Math.random() * 900)
-}
-function asteroidGenerationTiming() {
-    return Math.floor(Math.random() * 50)
-}
-function asteroidPushToArray() {
-    if (asteroidGenerationTiming() == 25) {
-        if (asteroidArray.length < 10) {
+
+class AsteroidRandomizer {
+    constructor() {}
+    xRandomPosition() {
+        return Math.floor(Math.random() * 900)
+    }
+    asteroidGenerationTiming() {
+        return Math.floor(Math.random() * 50)
+    }
+    asteroidPushToArray() {
+        if (this.asteroidGenerationTiming() == 25) {
+            if (asteroidArray.length < 10) {
+                asteroidArray.push(new Asteroid)
+            }
+        }
+        if (asteroidArray.length == 0) {
             asteroidArray.push(new Asteroid)
         }
     }
-    if (asteroidArray.length == 0) {
-        asteroidArray.push(new Asteroid)
-    }
+
 }
 class Ship {
     constructor() {
@@ -101,6 +106,9 @@ class Laser {
             laserArray.shift()
         }
     }
+    spawnLaser() {
+        laserArray.push(new Laser);
+    }
 }
 class InputHandler {
     constructor() {
@@ -108,7 +116,7 @@ class InputHandler {
             switch(event.keyCode) {
                 case 32:
                     if(laserArray.length < 10) {
-                        spawnLaser();
+                        laser.spawnLaser();
                     }
                     else {
                     }
@@ -131,7 +139,6 @@ class InputHandler {
         document.addEventListener('keyup', event => {
             switch(event.keyCode) {
                 case 32:
-                    spacebarPress = false
                     break
                 case 37:
                     if (ship.xSpeed < 0) {
@@ -178,9 +185,8 @@ class CollisionDetector {
 let collisionDetector = new CollisionDetector
 let ship = new Ship
 new InputHandler
-function spawnLaser() {
-    laserArray.push(new Laser);
-}
+let asteroidRandomizer = new AsteroidRandomizer
+let laser = new Laser
 function gameLoop() {
     ctx.clearRect(0, 0, 1000, 600)
     collisionDetector.edgeDetector()
@@ -188,8 +194,8 @@ function gameLoop() {
     laserArray.forEach(laser => {
         laser.draw();
     });
-    asteroidGenerationTiming()
-    asteroidPushToArray()
+    asteroidRandomizer.asteroidGenerationTiming()
+    asteroidRandomizer.asteroidPushToArray()
     asteroidArray.forEach(asteroid => {
         asteroid.draw()
     })
