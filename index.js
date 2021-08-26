@@ -1,6 +1,7 @@
 let canvas = document.getElementById('gameScreen')
 let ctx = canvas.getContext('2d')
 let asteroidArray = []
+let laserArray = []
 class Asteroid {
     constructor() {
         this.sprite1 = document.getElementById('asteroid1')
@@ -47,8 +48,146 @@ function asteroidPushToArray() {
         asteroidArray.push(new Asteroid)
     }
 }
+class Ship {
+    constructor() {
+        this.sprite = document.getElementById('ship')
+        this.x = 450
+        this.y = 520
+        this.width = 100
+        this.height = 100
+        this.maxSpeed = 5
+        this.xSpeed = 0
+        this.ySpeed = 0
+    }
+    draw() {
+        this.x += this.xSpeed
+        this.y += this.ySpeed
+        collisionDetector.edgeDetector()
+        ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height)
+    }
+    left() {
+        this.xSpeed = -this.maxSpeed
+    }
+    right() {
+        this.xSpeed = this.maxSpeed
+    }
+    ascend() {
+        this.ySpeed = -this.maxSpeed
+    }
+    descend() {
+        this.ySpeed = this.maxSpeed
+    }
+    stopx() {
+        this.xSpeed = 0
+    }
+    stopy() {
+        this.ySpeed = 0
+    }
+
+}
+class Laser {
+    constructor() {
+        this.sprite = document.getElementById('laser')
+        this.x = ship.x - 1
+        this.y = ship.y - 120
+        this.width = 100
+        this.height = 200
+        this.speed = -10
+    }
+    draw() {
+        ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height)
+        this.y += this.speed
+        if(this.y < -90) {
+            laserArray.shift()
+        }
+    }
+}
+class InputHandler {
+    constructor() {
+        document.addEventListener('keydown', event => {
+            switch(event.keyCode) {
+                case 32:
+                    if(laserArray.length < 10) {
+                        spawnLaser();
+                    }
+                    else {
+                    }
+                    break
+                case 37:
+                    ship.left()
+                    break
+                case 39:
+                    ship.right()
+                    break
+                case 38:
+                    ship.ascend()
+                    break
+                case 40:
+                    ship.descend()
+                    break
+
+            }
+        })
+        document.addEventListener('keyup', event => {
+            switch(event.keyCode) {
+                case 32:
+                    spacebarPress = false
+                    break
+                case 37:
+                    if (ship.xSpeed < 0) {
+                        ship.stopx()
+                    }
+                    break
+                case 39:
+                    if (ship.xSpeed > 0) {
+                        ship.stopx()
+                    }
+                    break
+                case 38:
+                    if (ship.ySpeed < 0){
+                        ship.stopy()
+                    }
+                    break
+                case 40:
+                    if (ship.ySpeed > 0) {
+                        ship.stopy()
+                    }
+                    break
+
+            }
+        })
+    }
+}
+class CollisionDetector {
+    constructor() {}
+    edgeDetector() {
+        if (ship.x >= 910) {
+            ship.x = 910
+        }
+        if (ship.x <= -10) {
+            ship.x = -10
+        }
+        if(ship.y >= 520) {
+            ship.y = 520
+        }
+        if (ship.y <= -10) {
+            ship.y = -10
+        }
+    }
+}
+let collisionDetector = new CollisionDetector
+let ship = new Ship
+new InputHandler
+function spawnLaser() {
+    laserArray.push(new Laser);
+}
 function gameLoop() {
     ctx.clearRect(0, 0, 1000, 600)
+    collisionDetector.edgeDetector()
+    ship.draw()
+    laserArray.forEach(laser => {
+        laser.draw();
+    });
     asteroidGenerationTiming()
     asteroidPushToArray()
     asteroidArray.forEach(asteroid => {
