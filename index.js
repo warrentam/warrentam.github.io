@@ -2,6 +2,7 @@ let canvas = document.getElementById('gameScreen')
 let ctx = canvas.getContext('2d')
 let asteroidArray = []
 let laserArray = []
+ctx.imageSmoothingEnabled = false;
 class Asteroid {
     constructor() {
         this.sprite1 = document.getElementById('asteroid1')
