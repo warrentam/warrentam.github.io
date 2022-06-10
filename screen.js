@@ -4,6 +4,6 @@ export default class Screen {
         this.ship = ship;
     }
     drawScreen() {
-        this.ctx.drawImage(ship, 658, 478, 110, 122);
+        this.ctx.drawImage(this.ship, 658, 478, 110, 122);
     }
 }
