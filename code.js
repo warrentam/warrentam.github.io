@@ -1,5 +1,5 @@
 import Screen from '/screen.js';
-import Ship from '/ship.js;';
+import Ship from 'ship.js;';
 
 
 var c = document.getElementById("gameScreen");
