@@ -1,4 +1,4 @@
-import Screen from 'screen.js';
+import Screen from '/screen.js';
 var c = document.getElementById("gameScreen");
 var ctx = c.getContext("2d");
 var img = new Image();
