@@ -4,6 +4,6 @@ export default class Screen {
         this.ship = ship;
     }
     drawScreen() {
-        this.ctx.drawImage(this.ship, this.ship.x, this.ship.y, this.ship.width, this.ship.height);
+        this.ctx.drawImage(this.ship.shipImg, this.ship.x, this.ship.y, this.ship.width, this.ship.height);
     }
 }
