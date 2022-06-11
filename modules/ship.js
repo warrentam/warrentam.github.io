@@ -5,10 +5,10 @@ export default class Ship {
         this.height = 100;
         this.x = 450;
         this.y = 520;
-        this.speed = 5
+        this.speed = 2
     }
     moveUp() {
-        this.y += this.speed;
+        this.y -= this.speed;
     }
     
 }
